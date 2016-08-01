@@ -2,7 +2,24 @@ import jsonApiUrl from 'utils/json-api-url'
 import fetch from 'isomorphic-fetch'
 import { camelizeKeys } from 'humps'
 
-// ??? fix me: exportable action types!
+export const FETCH_CREATOR_POST_FEED_START = 'FETCH_CREATOR_POST_FEED_START'
+export const FETCH_CREATOR_POST_FEED_SUCCESS = 'FETCH_CREATOR_POST_FEED_SUCCESS'
+
+
+export const fetchCreatorPostFeedStart = () => {
+  return {
+    type: FETCH_CREATOR_POST_FEED_START
+  };
+};
+
+
+export const fetchCreatorPostFeedSuccess = (data) => {
+  console.log("TESTING LOG HERE", 'fetchCreatorPostFeedSuccess');
+  return {
+    type: FETCH_CREATOR_POST_FEED_SUCCESS,
+    data
+  }
+};
 
 const fetchCreatorPostFeedIncludes = ['user.null']
 const fetchCreatorPostFeedFields = {
@@ -21,17 +38,26 @@ const fetchCreatorPostFeedFields = {
 }
 
 export const fetchCreatorPostFeed = (creatorId) => {
-    const url = jsonApiUrl('/stream', {
-        'include': fetchCreatorPostFeedIncludes,
-        'fields': fetchCreatorPostFeedFields,
-        'page': {
-            'cursor': 'null'
-        },
-        'filter': {
-            'is_by_creator': 'true',
-            'is_following': 'false',
-            'creator_id': creatorId
-        }
-    })
-    // ??? fix me
+    return (dispatch) => {
+      const url = jsonApiUrl('/stream', {
+          'include': fetchCreatorPostFeedIncludes,
+          'fields': fetchCreatorPostFeedFields,
+          'page': {
+              'cursor': 'null'
+          },
+          'filter': {
+              'is_by_creator': 'true',
+              'is_following': 'false',
+              'creator_id': creatorId
+          }
+      })
+
+      fetch(url)
+        .then((resp) => resp.json())
+        .then((resp) => {
+          const parsedResp = camelizeKeys(resp.data);
+
+          dispatch(fetchCreatorPostFeedSuccess(parsedResp));
+        });
+    }
 }

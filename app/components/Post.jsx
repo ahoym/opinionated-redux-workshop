@@ -21,6 +21,8 @@ const h2ContainerStyle = {
 }
 
 export default ({ post }) => {
+    const { attributes } = post;
+    console.log(attributes);
     return (
         <div style={postStyle}>
             <div style={h2ContainerStyle}>
@@ -28,8 +30,8 @@ export default ({ post }) => {
             </div>
             {
                 // // ??? fix me: if an image exists for the post, show it here.
-                // ??? && <img src={???}
-                //             style={imgStyle} />
+                attributes.image && <img src={attributes.image.largeUrl}
+                            style={imgStyle} />
             }
             {
                 // ??? fix me: content (text body) of post goes here
